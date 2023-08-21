@@ -13,15 +13,10 @@ public class OriginPosition : MonoBehaviour
         DrawCircle(check);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 
     private void DrawCircle(bool Check)
     {
-        line.loop = true;  // Cela ferme le cercle
+        line.loop = true; 
         line.positionCount = 360;
 
         float angle = 10f;

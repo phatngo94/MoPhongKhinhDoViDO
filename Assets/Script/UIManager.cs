@@ -1,16 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
-    public float ViDo;
-    public float KinhDo;
-    public bool North;
-    public bool South;
-    public bool East;
-    public bool West;
+    public float latitudeAngle;
+    public float longitudeAngle;
+    public bool north = true;
+    public bool south = false;
+    public bool east = true;
+    public bool west = false;
 
     public InputField InputLatitude;
     public InputField InputLongtitude;
@@ -18,9 +19,13 @@ public class UIManager : MonoBehaviour
     public Toggle TgSouth;
     public Toggle TgEast;
     public Toggle TgWest;
-    public Button OK;
+    public Button btnOK;
 
 
+    private void Start()
+    {
+        AddEvent();
+    }
     private void AddEvent()
     {
         InputLongtitude.onEndEdit.AddListener(delegate { GetInputLongitude(); }) ;
@@ -29,51 +34,79 @@ public class UIManager : MonoBehaviour
         TgSouth.onValueChanged.AddListener(delegate { GetSouthDirection(); });
         TgEast.onValueChanged.AddListener(delegate { GetEastDirection(); });
         TgWest.onValueChanged.AddListener(delegate { GetWestDirection(); });
+        btnOK.onClick.AddListener(delegate { OnChangePositionTheSun(); });
     }
 
     private void GetInputLongitude()
     {
         string input = InputLongtitude.text;
-        if (input == "") KinhDo = 0;
+        float angle = float.Parse(input, CultureInfo.InvariantCulture);
+        if (input == "") longitudeAngle = 0f;
         else
         {
-            if (float.Parse(input) > 90) KinhDo = 90;
-            if (float.Parse(input) < 0) KinhDo = 0;
+            if (angle <= 180f && angle >= 0f) longitudeAngle = angle;
+            else if (angle > 180f)
+            {
+                longitudeAngle = 180f;
+                InputLongtitude.text = "180";
+            }
+            else if (angle < 0f)
+            {
+                longitudeAngle = 0f;
+                InputLongtitude.text = "0";
+            }
         }
+        
     }
 
     private void GetInputLaitude()
     {
         string input = InputLatitude.text;
-        if (input == "") ViDo = 0;
+        float angle = float.Parse(input, CultureInfo.InvariantCulture);
+        if (input == "") latitudeAngle = 0f;
         else
         {
-            if (float.Parse(input) > 180) ViDo = 180;
-            if (float.Parse(input) < 0) ViDo = 0;
+            if (angle <= 90f && angle >= 0f) latitudeAngle = angle;
+            else if (angle > 90f)
+            {
+                latitudeAngle = 90f;
+                InputLatitude.text = "90";
+            }
+            else if (angle < 0f)
+            { 
+                latitudeAngle = 0f;
+                InputLatitude.text = "0";
+            }
         }
+        
     }
 
     private void GetNorthDirection()
     {
-        if (TgNorth.isOn) North = true;
-        else North = false;
+        if (TgNorth.isOn) north = true;
+        else north = false;
     }
 
     private void GetSouthDirection()
     {
-        if (TgSouth.isOn) South = true;
-        else South = false;
+        if (TgSouth.isOn) south = true;
+        else south = false;
     }
 
     private void GetEastDirection()
     {
-        if (TgEast.isOn) East = true;
-        else East = false;
+        if (TgEast.isOn) east = true;
+        else east = false;
     }
 
     private void GetWestDirection()
     {
-        if (TgWest.isOn) West = true;
-        else West = false;
+        if (TgWest.isOn) west = true;
+        else west = false;
+    }
+
+    private void OnChangePositionTheSun()
+    {      
+        TheSun.Instance.PositionTheSun(latitudeAngle,longitudeAngle,north,east);
     }
 }
